@@ -2,85 +2,226 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Spring eCommerce</title>
-
-
-    <!-- Bootstrap core CSS -->
+    <title>Spring eCommerce — Administrar Productos</title>
     <link th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link th:href="@{/css/heroic-features.css}" rel="stylesheet">
-
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #212529;
+            margin: 0;
+        }
+        
+        .admin-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .admin-table td {
+            vertical-align: middle;
+            font-size: 0.875rem;
+        }
+        
+        .admin-table .td-name {
+            font-weight: 600;
+        }
+        
+        .admin-table .td-desc {
+            color: #6c757d;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .admin-table .td-price {
+            font-weight: 600;
+            color: #198754;
+        }
+        
+        .admin-table tr:hover td {
+            background: #f8f9fa;
+        }
+        
+        .inv-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            border-radius: 8px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .btn-edit {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid #ffc107;
+            background: #fff3cd;
+            color: #664d03;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .btn-edit:hover {
+            background: #ffe69c;
+            color: #664d03;
+        }
+        
+        .btn-del {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid #f5c2c7;
+            background: #f8d7da;
+            color: #842029;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .btn-del:hover {
+            background: #f1aeb5;
+            color: #842029;
+        }
+        
+        .btn-crear {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 9px 18px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        
+        .btn-crear:hover {
+            background: #0b5ed7;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <div th:include="administrador/template_admin.html::header"></div>
 
-    <!-- Page Content -->
-    <div class="container">
+    <div class="container py-4">
 
-
-        <!-- Page Heading/Breadcrumbs -->
-        <h1 class="mt-4 mb-3">
-            Spring eCommerce <small>Productos</small>
-        </h1>
-
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Ver Productos</li>
-        </ol>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active">Productos</li>
+            </ol>
+        </nav>
 
         <!-- Alerta -->
-        <div th:if="${msg}" th:class="'alert ' + ${msgClass} + ' alert-dismissible fade show mt-3'" role="alert">
-            <strong th:text="${msg}"></strong>
-            <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-            </button>
+        <div th:if="${msg}" th:class="'alert alert-dismissible fade show mb-4 ' + ${msgClass}" role="alert">
+            <span th:text="${msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <a class="btn btn-primary" th:href="@{/productos/create}"> Crear Producto</a>
-        <h2>Productos</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Descripción</th>
-                    <th scope="col">Inventario</th>
-                    <th scope="col">Precio</th>
-                    <th scope="col">Acción</th>
-                    <th scope="col">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="producto:${productos}">
-                    <td th:text="${producto.nombre}"></td>
-                    <td th:text="${producto.descripcion}"></td>
-                    <td th:text="${producto.cantidad}"></td>
-                    <td th:text="'$' + ${producto.precio}"></td>
-                    <td><a class="btn btn-warning" th:href="@{productos/edit/{id} (id=${producto.id}) }">Editar</a> </td>
-                    <td><a class="btn btn-danger" th:href="@{productos/delete/{id} (id=${producto.id}) }">Eliminar</a> </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Tarjetas de estadísticas -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <p class="stat-label">Total productos</p>
+                    <p class="stat-value" th:text="${#lists.size(productos)}">0</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <p class="stat-label">Unidades en stock</p>
+                    <p class="stat-value" th:text="${#aggregates.sum(productos.![cantidad])}">0</p>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <p class="stat-label">Precio promedio</p>
+                    <p class="stat-value" th:text="'$' + ${#aggregates.avg(productos.![precio])}">$0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Encabezado + botón -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-semibold mb-0">Listado de productos</h5>
+            <a th:href="@{/productos/create}" class="btn-crear">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg> Crear producto
+            </a>
+        </div>
+
+        <!-- Tabla -->
+        <div class="card p-0 overflow-hidden">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Nombre</th>
+                        <th>Descripción</th>
+                        <th>Inventario</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="producto : ${productos}">
+                        <td class="td-name ps-3" th:text="${producto.nombre}"></td>
+                        <td class="td-desc" th:text="${producto.descripcion}"></td>
+                        <td>
+                            <span class="inv-badge" th:text="${producto.cantidad}"></span>
+                        </td>
+                        <td class="td-price" th:text="'$' + ${producto.precio}"></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a class="btn-edit" th:href="@{/productos/edit/{id}(id=${producto.id})}">Editar</a>
+                                <a class="btn-del" th:href="@{/productos/delete/{id}(id=${producto.id})}">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
     </div>
-    <!-- /.container -->
 
-    <!-- Footer -->
-    <!--<div th:include="administrador/template_admin.html::footer"></div>-->
-
-    <!-- Bootstrap core JavaScript -->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
 </body>
 
 </html>
