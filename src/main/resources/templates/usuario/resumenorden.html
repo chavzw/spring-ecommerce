@@ -2,107 +2,238 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Spring eCommerce</title>
-
-
-    <!-- Bootstrap core CSS -->
-    <link th:href="@{vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link th:href="@{css/heroic-features.css}" rel="stylesheet">
-
+    <title>Spring eCommerce — Resumen de orden</title>
+    <link th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6c757d;
+            margin: 0 0 12px;
+        }
+        
+        .user-info-grid {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .user-field .field-label {
+            font-size: 11px;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        
+        .user-field .field-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .order-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6c757d;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .order-table td {
+            vertical-align: middle;
+            font-size: 0.875rem;
+        }
+        
+        .order-table .td-name {
+            font-weight: 600;
+        }
+        
+        .order-table .td-muted {
+            color: #6c757d;
+        }
+        
+        .order-table .td-total {
+            font-weight: 600;
+        }
+        
+        .summary-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 700;
+            color: #212529;
+            padding-top: 12px;
+            border-top: 1px solid #dee2e6;
+            margin-top: 4px;
+        }
+        
+        .btn-generar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #212529;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            text-decoration: none;
+            transition: background 0.15s;
+            margin-top: 1rem;
+        }
+        
+        .btn-generar:hover {
+            background: #343a40;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <div th:include="usuario/template_usuario.html::header"></div>
 
-    <!-- Page Content -->
-    <div class="container">
+    <div class="container py-4">
 
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/getCart}">Carrito</a></li>
+                <li class="breadcrumb-item active">Resumen de orden</li>
+            </ol>
+        </nav>
 
-        <!-- Page Heading/Breadcrumbs -->
-        <h1 class="mt-4 mb-3">
-            Spring eCommerce <small>Resumen de la orden</small>
-        </h1>
+        <div class="row g-3 align-items-start">
 
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Orden</li>
-        </ol>
+            <!-- Columna principal -->
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-body">
 
-        <!-- Blog Post -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-9">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                DATOS ORDEN
-                            </h5>
-                            <h6>Nombre: </h6>
-                            <h6>Correo: </h6>
-                            <h6>Dirección</h6>
-
-                            <h5 class="card-title">
-                                PRODUCTOS
-                            </h5>
-                            <div class="alert alert-light" role="alert">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Producto</th>
-                                            <th scope="col">Precio</th>
-                                            <th scope="col">Cantidad</th>
-                                            <th scope="col">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Nombre</td>
-                                            <td>Precio</td>
-                                            <td>Cantidad</td>
-                                            <td>Total</td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <!-- Datos del cliente -->
+                        <p class="section-label">Datos del cliente</p>
+                        <div class="user-info-grid">
+                            <div class="user-field">
+                                <span class="field-label">Nombre</span>
+                                <span class="field-value" th:text="${usuario.nombre}"></span>
                             </div>
-
+                            <div class="user-field">
+                                <span class="field-label">Correo</span>
+                                <span class="field-value" th:text="${usuario.email}"></span>
+                            </div>
+                            <div class="user-field" style="grid-column: 1 / -1">
+                                <span class="field-label">Dirección</span>
+                                <span class="field-value" th:text="${usuario.direccion}"></span>
+                            </div>
                         </div>
-                    </div>
 
+                        <hr class="my-3">
 
-                    <div class="col-lg-3">
-                        <h2 class="card-title">Resumen Orden</h2>
+                        <!-- Productos -->
+                        <p class="section-label">Productos</p>
+                        <div class="border rounded overflow-hidden">
+                            <table class="table order-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-3">Producto</th>
+                                        <th>Precio</th>
+                                        <th>Cantidad</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="dtorden : ${cart}">
+                                        <td class="td-name ps-3" th:text="${dtorden.nombre}"></td>
+                                        <td class="td-muted" th:text="'$' + ${dtorden.precio}"></td>
+                                        <td class="td-muted" th:text="${dtorden.cantidad}"></td>
+                                        <td class="td-total" th:text="'$' + ${dtorden.total}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <h5> Total:</h5>
-                            </li>
-                            <a href="#" class="btn btn-dark">Generar</a>
-                        </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Resumen lateral -->
+            <div class="col-lg-3">
+                <div class="summary-card">
+                    <p class="section-label">Resumen de orden</p>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span th:text="'$' + ${orden.total}"></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Envío</span>
+                        <span class="text-success fw-semibold">Gratis</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Artículos</span>
+                        <span th:text="${#lists.size(cart)}"></span>
+                    </div>
+
+                    <div class="summary-total-row">
+                        <span>Total</span>
+                        <span th:text="'$' + ${orden.total}"></span>
+                    </div>
+
+                    <a th:href="@{/orden/guardar}" class="btn-generar">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg> Generar orden
+                    </a>
+                </div>
+            </div>
+
         </div>
-        <!-- /.container -->
+    </div>
 
-        <!-- Footer -->
-        <!-- Footer -->
-        <!--<div th:include="usuario/template_usuario.html::footer"></div>-->
-
-        <!-- Bootstrap core JavaScript -->
-        <script th:src="@{vendor/jquery/jquery.min.js}"></script>
-        <script th:src="@{vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>
