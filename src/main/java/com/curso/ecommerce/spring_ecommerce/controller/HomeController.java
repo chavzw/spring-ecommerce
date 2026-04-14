@@ -20,6 +20,11 @@ import com.curso.ecommerce.spring_ecommerce.model.Orden;
 import com.curso.ecommerce.spring_ecommerce.model.Producto;
 import com.curso.ecommerce.spring_ecommerce.service.ProductoService;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/")
 public class HomeController {
@@ -53,44 +58,46 @@ public class HomeController {
     }
 
     @PostMapping("/cart")
-    public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model){
-        Producto producto = new Producto();
-        double sumaTotal = 0;
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> addCart(@RequestParam Integer id, @RequestParam Integer cantidad){
+        Map<String, String> response = new HashMap<>();
+        
+        try {
+            Optional<Producto> optionalProducto = productoService.get(id);
+            Producto producto = optionalProducto.get();
+            Integer idProducto = producto.getId();
 
-        Optional<Producto> optionalProducto = productoService.get(id);
-        log.info("Producto añadido: {}", optionalProducto.get());
-        log.info("Cantidad: {}", cantidad);
-        producto = optionalProducto.get();
+            Optional<DetalleOrden> detalleExistente = detalles.stream()
+                .filter(p -> p.getProducto().getId().equals(idProducto))
+                .findFirst();
 
-        Integer idProducto = producto.getId();
+            if (detalleExistente.isPresent()) {
+                DetalleOrden detalle = detalleExistente.get();
+                detalle.setCantidad(detalle.getCantidad() + cantidad);
+                detalle.setTotal(detalle.getPrecio() * detalle.getCantidad());
+                response.put("msg", "Se actualizó la cantidad de '" + producto.getNombre() + "' en el carrito");
+                response.put("tipo", "info");
+            } else {
+                DetalleOrden detalleOrden = new DetalleOrden();
+                detalleOrden.setCantidad(cantidad);
+                detalleOrden.setPrecio(producto.getPrecio());
+                detalleOrden.setNombre(producto.getNombre());
+                detalleOrden.setTotal(producto.getPrecio() * cantidad);
+                detalleOrden.setProducto(producto);
+                detalles.add(detalleOrden);
+                response.put("msg", "'" + producto.getNombre() + "' agregado al carrito");
+                response.put("tipo", "success");
+            }
 
-        // Buscar si el producto ya está en el carrito
-        Optional<DetalleOrden> detalleExistente = detalles.stream()
-            .filter(p -> p.getProducto().getId().equals(idProducto))
-            .findFirst();
+            double sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+            orden.setTotal(sumaTotal);
 
-        if (detalleExistente.isPresent()) {
-            // ✅ Si ya existe, sumar la cantidad y recalcular el total
-            DetalleOrden detalle = detalleExistente.get();
-            detalle.setCantidad(detalle.getCantidad() + cantidad);
-            detalle.setTotal(detalle.getPrecio() * detalle.getCantidad());
-        } else {
-            // Si no existe, crear nuevo detalle
-            DetalleOrden detalleOrden = new DetalleOrden();
-            detalleOrden.setCantidad(cantidad);
-            detalleOrden.setPrecio(producto.getPrecio());
-            detalleOrden.setNombre(producto.getNombre());
-            detalleOrden.setTotal(producto.getPrecio() * cantidad);
-            detalleOrden.setProducto(producto);
-            detalles.add(detalleOrden);
+        } catch (Exception e) {
+            response.put("msg", "Error al agregar el producto");
+            response.put("tipo", "danger");
         }
 
-        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
-        orden.setTotal(sumaTotal);
-        model.addAttribute("cart", detalles);
-        model.addAttribute("orden", orden);
-
-        return "usuario/carrito";
+        return ResponseEntity.ok(response);
     }
 
     //quitar producto del carrito
@@ -126,4 +133,11 @@ public class HomeController {
         model.addAttribute("orden", orden);
         return "/usuario/carrito";
     }
+
+    @GetMapping("/order")
+    public String order(){
+        
+        return "usuario/resumenorden";
+    }
+
 }

@@ -2,65 +2,163 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
     <title>Spring eCommerce</title>
-
-
-    <!-- Bootstrap core CSS -->
     <link th:href="@{vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link th:href="@{css/heroic-features.css}" rel="stylesheet">
-
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: 4px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-section h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .hero-section p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .product-card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            transition: box-shadow 0.2s, border-color 0.2s;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-color: #ced4da;
+        }
+        
+        .product-card img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+        
+        .product-card .card-body {
+            padding: 1rem;
+        }
+        
+        .product-card .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .product-card .card-price {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .product-card .btn-ver {
+            display: block;
+            margin: 0 1rem 1rem;
+            text-align: center;
+            background: #198754;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        
+        .product-card .btn-ver:hover {
+            background: #157347;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #212529;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
-    <div th:include="usuario/template_usuario.html::header"></div>
+    <!-- Navbar mejorado -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Spring eCommerce</a>
+            <div class="ms-auto">
+                <a th:href="@{/getCart}" class="btn btn-outline-secondary position-relative">
+                    <i class="bi bi-cart"></i> Carrito
+                    <span id="cart-count" class="cart-badge">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Page Content -->
     <div class="container">
 
-        <!-- Jumbotron Header -->
-        <header class="jumbotron my-4">
-            <h1 class="display-3">Bienvenido a Spring Ecommerce 2026</h1>
-            <p class="lead">Tu tienda de productos en Línea</p>
-        </header>
+        <!-- Hero -->
+        <div class="hero-section">
+            <span class="badge bg-success mb-2">Nuevo 2026</span>
+            <h1>Bienvenido a Spring eCommerce</h1>
+            <p>Tu tienda de productos en línea — encuentra lo que necesitas.</p>
+            <a href="#productos" class="btn btn-outline-dark btn-sm">Ver catálogo</a>
+        </div>
 
-        <!-- Page Features -->
-        <div class="row text-center">
+        <!-- Productos -->
+        <p class="section-title" id="productos">Productos destacados</p>
 
-            <div class="col-lg-3 col-md-6 mb-4" th:each="producto: ${productos}">
-                <div class="card h-100">
-                    <img class="card-img-top" th:src="@{/images/{img} (img=${producto.imagen})}" alt="">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 mb-5">
+            <div class="col" th:each="producto: ${productos}">
+                <div class="product-card">
+                    <img th:src="@{/images/{img}(img=${producto.imagen})}" alt="">
                     <div class="card-body">
-                        <p class="card-text" th:text="${producto.nombre}"></p>
+                        <p class="card-title" th:text="${producto.nombre}"></p>
+                        <p class="card-price" th:text="'$' + ${producto.precio}"></p>
                     </div>
-                    <div class="card-footer">
-                        <a th:href="@{/productohome/{id} (id=${producto.id})}" class="btn btn-success">Ver producto</a>
-                    </div>
+                    <a th:href="@{/productohome/{id}(id=${producto.id})}" class="btn-ver">
+                    Ver producto
+                </a>
                 </div>
             </div>
-
         </div>
-        <!-- /.row -->
 
     </div>
-    <!-- /.container -->
 
-    <!-- Footer -->
-    <!--<div th:include="usuario/template_usuario.html::footer"></div>-->
-
-    <!-- Bootstrap core JavaScript -->
     <script th:src="@{vendor/jquery/jquery.min.js}"></script>
     <script th:src="@{vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
 </body>
 
 </html>

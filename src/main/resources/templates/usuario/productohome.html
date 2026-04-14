@@ -2,90 +2,248 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Spring eCommerce</title>
-
-
-    <!-- Bootstrap core CSS -->
+    <title>Spring eCommerce — Producto</title>
     <link th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link th:href="@{/css/heroic-features.css}" rel="stylesheet">
-
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .product-img-wrap {
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .product-price {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #198754;
+            margin: 0;
+        }
+        
+        .product-desc {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .qty-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background: white;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        #qty-display {
+            font-size: 1rem;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .btn-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            width: 100%;
+        }
+        
+        .btn-cart:hover {
+            background: #157347;
+        }
+        
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #d1e7dd;
+            color: #0a3622;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .divider {
+            border: none;
+            border-top: 1px solid #e9ecef;
+            margin: 0.25rem 0;
+        }
+        
+        #alerta {
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <div th:include="usuario/template_usuario.html::header"></div>
 
-    <!-- Page Content -->
-    <div class="container">
+    <div class="container py-4">
 
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active">Producto</li>
+            </ol>
+        </nav>
 
-        <!-- Page Heading/Breadcrumbs -->
-        <h1 class="mt-4 mb-3">
-            Spring eCommerce <small>Producto</small>
-        </h1>
+        <!-- Alerta -->
+        <div id="alerta" class="alert alert-dismissible mb-4" role="alert" style="display:none">
+            <span id="alerta-msg"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('alerta').style.display='none'"></button>
+        </div>
 
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-            <li class="breadcrumb-item active">Producto</li>
-        </ol>
+        <!-- Producto -->
+        <div class="row g-4 align-items-start">
 
-        <!-- Blog Post -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <a href="#"> <img class="img-fluid rounded" th:src="@{/images/{img} (img=${producto.imagen})}" alt="">
-                        </a>
+            <!-- Imagen -->
+            <div class="col-lg-6">
+                <div class="product-img-wrap">
+                    <img th:src="@{/images/{img}(img=${producto.imagen})}" alt="Imagen del producto">
+                </div>
+            </div>
+
+            <!-- Detalle -->
+            <div class="col-lg-6">
+                <div class="product-info">
+
+                    <span class="stock-badge">
+                    ✓ En stock
+                </span>
+
+                    <h1 class="product-name" th:text="${producto.nombre}"></h1>
+                    <p class="product-price" th:text="'$' + ${producto.precio}"></p>
+
+                    <hr class="divider">
+
+                    <p class="product-desc" th:text="${producto.descripcion}"></p>
+
+                    <hr class="divider">
+
+                    <!-- Cantidad -->
+                    <div>
+                        <p style="font-size:0.85rem;color:#6c757d;margin:0 0 8px">Cantidad</p>
+                        <div class="qty-wrap">
+                            <button class="qty-btn" onclick="cambiarCantidad(-1)">−</button>
+                            <span id="qty-display">1</span>
+                            <button class="qty-btn" onclick="cambiarCantidad(1)">+</button>
+                            <span style="font-size:12px;color:#adb5bd">máx. 5</span>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <form th:action="@{/cart}" method="POST">
-                            <input type="hidden" th:value="${producto.id}" name="id">
 
-                            <h2 class="card-title" th:text="${producto.nombre}"></h2>
+                    <input type="hidden" id="productoId" th:value="${producto.id}">
 
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <h5 th:text="'Precio: $' + ${producto.precio}"></h5>
-                                </li>
-                                <li class="list-group-item">
-                                    <p th:text="'Descripción: ' + ${producto.descripcion}"></p>
-                                </li>
-                                <li class="list-group-item">
-                                    <h6>
-                                        Cantidad: <input type="number" id="cantidad" name="cantidad" autocomplete="off" min="1" max="5" value="1">
-                                    </h6>
-                                </li>
-                            </ul>
-
-
-                            <button type="submit" class="btn btn-dark">Añadir al carrito </button>
-
-                        </form>
-                    </div>
+                    <button class="btn-cart" onclick="agregarAlCarrito()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    Añadir al carrito
+                </button>
                 </div>
             </div>
         </div>
-
-
     </div>
-    <!-- /.container -->
 
-    <!-- Footer -->
-    <!--<div th:include="usuario/template_usuario.html::footer"></div>-->
-
-    <!-- Bootstrap core JavaScript -->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        let qty = 1;
 
+        function cambiarCantidad(delta) {
+            qty = Math.min(5, Math.max(1, qty + delta));
+            document.getElementById('qty-display').textContent = qty;
+        }
+
+        function agregarAlCarrito() {
+            const id = document.getElementById('productoId').value;
+
+            fetch('/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `id=${id}&cantidad=${qty}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const alerta = document.getElementById('alerta');
+                    alerta.className = `alert alert-${data.tipo} alert-dismissible mb-4`;
+                    document.getElementById('alerta-msg').textContent = data.msg;
+                    alerta.style.display = 'block';
+                    setTimeout(() => alerta.style.display = 'none', 3000);
+
+                    const badge = document.getElementById('cart-count');
+                    if (badge) badge.textContent = data.totalItems;
+                })
+                .catch(() => {
+                    const alerta = document.getElementById('alerta');
+                    alerta.className = 'alert alert-danger alert-dismissible mb-4';
+                    document.getElementById('alerta-msg').textContent = 'Error al conectar con el servidor';
+                    alerta.style.display = 'block';
+                });
+        }
+    </script>
 </body>
 
 </html>

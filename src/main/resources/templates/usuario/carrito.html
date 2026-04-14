@@ -2,92 +2,206 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Spring eCommerce</title>
-
-
-    <!-- Bootstrap core CSS -->
+    <title>Spring eCommerce — Carrito</title>
     <link th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link th:href="@{/css/heroic-features.css}" rel="stylesheet">
-
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .cart-table th {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6c757d;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .cart-table td {
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+        
+        .cart-table .td-name {
+            font-weight: 600;
+        }
+        
+        .cart-table .td-total {
+            font-weight: 600;
+        }
+        
+        .btn-quitar {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid #f5c2c7;
+            background: #f8d7da;
+            color: #842029;
+            cursor: pointer;
+        }
+        
+        .btn-quitar:hover {
+            background: #f1aeb5;
+        }
+        
+        .summary-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6c757d;
+            margin: 0 0 4px;
+        }
+        
+        .summary-total {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+        
+        .summary-items {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 0;
+        }
+        
+        .btn-orden {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #212529;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        
+        .btn-orden:hover {
+            background: #343a40;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <div th:include="usuario/template_usuario.html::header"></div>
 
-    <!-- Page Content -->
-    <div class="container">
+    <div class="container py-4">
 
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active">Carrito</li>
+            </ol>
+        </nav>
 
-        <!-- Page Heading/Breadcrumbs -->
-        <h1 class="mt-4 mb-3">
-            <small>Carrito</small>
-        </h1>
+        <!-- Alerta dinámica -->
+        <div th:if="${msg}" th:class="'alert alert-dismissible fade show mb-4 ' + ${msgClass}" role="alert">
+            <span th:text="${msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
 
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-            <li class="breadcrumb-item active">Carrito</li>
-        </ol>
+        <h5 class="mb-3 fw-semibold">Mi carrito</h5>
 
-        <!-- Blog Post -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-9">
-                        <table class="table">
+        <!-- Carrito vacío -->
+        <div th:if="${#lists.isEmpty(cart)}" class="card mb-4">
+            <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.2" class="mb-3">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+                <p class="mb-1 fw-semibold">Tu carrito está vacío</p>
+                <p class="small text-muted mb-3">Agrega productos desde el catálogo</p>
+                <a th:href="@{/}" class="btn btn-outline-dark btn-sm">Ver productos</a>
+            </div>
+        </div>
+
+        <!-- Carrito con productos -->
+        <div th:if="${not #lists.isEmpty(cart)}" class="row g-3 align-items-start">
+
+            <!-- Tabla -->
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table class="table cart-table mb-0">
                             <thead>
                                 <tr>
-                                    <th scope="col">Producto</th>
-                                    <th scope="col">Precio</th>
-                                    <th scope="col">Cantidad</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Acción</th>
+                                    <th class="ps-3">Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Total</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="dorden:${cart}">
-                                    <td th:text="${dorden.nombre}"></td>
+                                <tr th:each="dorden : ${cart}">
+                                    <td class="td-name ps-3" th:text="${dorden.nombre}"></td>
                                     <td th:text="'$' + ${dorden.precio}"></td>
                                     <td th:text="${dorden.cantidad}"></td>
-                                    <td th:text="'$' + ${dorden.total}"></td>
-                                    <td><a a th:href="@{/delete/cart/{id}(id=${dorden.producto.id})}" class="btn btn-danger">Quitar</a></td>
+                                    <td class="td-total" th:text="'$' + ${dorden.total}"></td>
+                                    <td class="pe-3">
+                                        <a th:href="@{/delete/cart/{id}(id=${dorden.producto.id})}" class="btn-quitar">Quitar</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="col-lg-3">
-                        <h2 class="card-title">SUBTOTAL</h2>
-
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <h5 th:text="'$' + ${orden.total}"></h5>
-                            </li>
-                            <a href="resumenorden.html" class="btn btn-dark">Ver Orden</a>
-                        </ul>
-                    </div>
-
                 </div>
             </div>
+
+            <!-- Resumen -->
+            <div class="col-lg-3">
+                <div class="summary-card">
+                    <p class="summary-label">Subtotal</p>
+                    <p class="summary-total" th:text="'$' + ${orden.total}"></p>
+                    <p class="summary-items" th:text="${#lists.size(cart)} + ' artículos en tu carrito'"></p>
+
+                    <hr class="my-3">
+
+                    <div class="d-flex justify-content-between mb-3" style="font-size:13px;color:#6c757d">
+                        <span>Envío</span>
+                        <span class="text-success fw-semibold">Gratis</span>
+                    </div>
+
+                    <a th:href="@{/order}" class="btn-orden">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4"/>
+                        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+                    </svg> Ver orden
+                    </a>
+                </div>
+            </div>
+
         </div>
-        <!-- /.container -->
+    </div>
 
-        <!-- Footer -->
-        <!--<div th:include="usuario/template_usuario.html::footer"></div>-->
-
-        <!-- Bootstrap core JavaScript -->
-        <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
-        <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>

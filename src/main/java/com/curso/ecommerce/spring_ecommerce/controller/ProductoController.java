@@ -21,6 +21,8 @@ import com.curso.ecommerce.spring_ecommerce.service.UploadFileService;
 
 import org.springframework.ui.Model;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 @Controller
 @RequestMapping("/productos")
 public class ProductoController {
@@ -44,17 +46,29 @@ public class ProductoController {
         return "productos/create";
     }
 
+
     @PostMapping("/save")
-    public String save(Producto producto, @RequestParam("img") MultipartFile file) throws IOException{
-        LOGGER.info("Este es el producto {}", producto);
-        Usuario u = new Usuario(1, "", "", "", "", "", "", "");
-        producto.setUsuario(u);
-        //logica para imagen
-        if (producto.getId()==null) { //validacion cuando se crea un producto
-            String nombreImagen = upload.saveImage(file);
-            producto.setImagen(nombreImagen);
+    public String save(Producto producto, @RequestParam("img") MultipartFile file, 
+                    RedirectAttributes attributes) throws IOException {
+        try {
+            LOGGER.info("Este es el producto {}", producto);
+            Usuario u = new Usuario(1, "", "", "", "", "", "", "");
+            producto.setUsuario(u);
+
+            if (producto.getId() == null) {
+                String nombreImagen = upload.saveImage(file);
+                producto.setImagen(nombreImagen);
+            }
+
+            productoService.save(producto);
+            attributes.addFlashAttribute("msg", "Producto guardado correctamente");
+            attributes.addFlashAttribute("msgClass", "alert-success");
+
+        } catch (Exception e) {
+            attributes.addFlashAttribute("msg", "Error al guardar el producto");
+            attributes.addFlashAttribute("msgClass", "alert-danger");
         }
-        productoService.save(producto);
+
         return "redirect:/productos";
     }
 
