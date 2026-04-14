@@ -54,7 +54,6 @@ public class HomeController {
 
     @PostMapping("/cart")
     public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model model){
-        DetalleOrden detalleOrden = new DetalleOrden();
         Producto producto = new Producto();
         double sumaTotal = 0;
 
@@ -63,22 +62,30 @@ public class HomeController {
         log.info("Cantidad: {}", cantidad);
         producto = optionalProducto.get();
 
-        detalleOrden.setCantidad(cantidad);
-        detalleOrden.setPrecio(producto.getPrecio());
-        detalleOrden.setNombre(producto.getNombre());
-        detalleOrden.setTotal(producto.getPrecio()*cantidad);
-        detalleOrden.setProducto(producto);
-
-        //validar que el producto no se añada dos veces
         Integer idProducto = producto.getId();
-        boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
 
-        if (!ingresado) {
+        // Buscar si el producto ya está en el carrito
+        Optional<DetalleOrden> detalleExistente = detalles.stream()
+            .filter(p -> p.getProducto().getId().equals(idProducto))
+            .findFirst();
+
+        if (detalleExistente.isPresent()) {
+            // ✅ Si ya existe, sumar la cantidad y recalcular el total
+            DetalleOrden detalle = detalleExistente.get();
+            detalle.setCantidad(detalle.getCantidad() + cantidad);
+            detalle.setTotal(detalle.getPrecio() * detalle.getCantidad());
+        } else {
+            // Si no existe, crear nuevo detalle
+            DetalleOrden detalleOrden = new DetalleOrden();
+            detalleOrden.setCantidad(cantidad);
+            detalleOrden.setPrecio(producto.getPrecio());
+            detalleOrden.setNombre(producto.getNombre());
+            detalleOrden.setTotal(producto.getPrecio() * cantidad);
+            detalleOrden.setProducto(producto);
             detalles.add(detalleOrden);
         }
 
-        sumaTotal = detalles.stream().mapToDouble(dt->dt.getTotal()).sum();
-
+        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
         orden.setTotal(sumaTotal);
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", orden);
